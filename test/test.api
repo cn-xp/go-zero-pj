@@ -1,0 +1,82 @@
+info(
+	title: "doc title"
+	desc: "doc description first part，doc description second part"
+	version: "1.0"
+)
+
+type User {
+	Name string `json:"user"` // 用户姓名
+}
+
+type Student {
+	Name string `json:"name"` // 学生姓名
+}
+
+type Teacher {
+}
+
+type (
+	Address {
+		City string `json:"city"`
+	}
+
+	InnerType {
+		Image string `json:"image"`
+	}
+
+	CreateRequest {
+		InnerType
+		Name    string    `form:"name"`
+		Age     int       `form:"age,optional"`
+		Address []Address `json:"address,optional"`
+	}
+
+	GetRequest {
+		Name string `path:"name"`
+		Age  int    `form:"age,optional"`
+	}
+
+	GetResponse {
+		Code    int     `json:"code"`
+		Desc    string  `json:"desc,omitempty"`
+		Address Address `json:"address"`
+		Service int     `json:"service"`
+	}
+)
+
+@server(
+	group: user
+)
+service user-api {
+	@doc(
+		summary: "user title"
+	)
+	@handler GetUserHandler
+	get /api/user/:name (GetRequest) returns (GetResponse)
+	
+	@handler CreateUserHandler
+	post /api/users/create (CreateRequest)
+}
+
+@server(
+	jwt: Auth
+	group: profile
+)
+service user-api {
+	@doc(
+		summary: "user title"
+	)
+	@handler GetProfileHandler
+	get /api/profile/:name (GetRequest) returns (GetResponse)
+	
+	@handler CreateProfileHandler
+	post /api/profile/create (CreateRequest)
+}
+
+service user-api {
+	@doc(
+		summary: "desc in one line"
+	)
+	@handler PingHandler
+	head /api/ping ()
+}
